@@ -337,7 +337,7 @@ export class SensorEditorCard extends SubscribeMixin(LitElement) {
               `
         : ''}
 
-          ${!this.data.type ||
+          ${!this.data.type || this.data.trigger_unavailable ||
         [ESensorTypes.Window, ESensorTypes.Door, ESensorTypes.Motion, ESensorTypes.Environmental, ESensorTypes.Other].includes(this.data.type)
         ? html`
                 <alarmo-settings-row .narrow=${this.narrow}>
