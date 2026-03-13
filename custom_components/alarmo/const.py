@@ -23,7 +23,7 @@ DOMAIN = "alarmo"
 
 CUSTOM_COMPONENTS = "custom_components"
 INTEGRATION_FOLDER = DOMAIN
-PANEL_FOLDER = ""
+PANEL_FOLDER = "frontend"
 PANEL_FILENAME = "alarm-panel.js"
 
 PANEL_URL = "/api/panel_custom/alarmo"
