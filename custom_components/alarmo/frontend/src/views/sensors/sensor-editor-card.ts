@@ -338,7 +338,7 @@ export class SensorEditorCard extends SubscribeMixin(LitElement) {
         : ''}
 
           ${!this.data.type ||
-        [ESensorTypes.Window, ESensorTypes.Door, ESensorTypes.Motion, ESensorTypes.Other].includes(this.data.type)
+        [ESensorTypes.Window, ESensorTypes.Door, ESensorTypes.Motion, ESensorTypes.Environmental, ESensorTypes.Other].includes(this.data.type)
         ? html`
                 <alarmo-settings-row .narrow=${this.narrow}>
                   <span slot="heading">
@@ -350,8 +350,8 @@ export class SensorEditorCard extends SubscribeMixin(LitElement) {
 
                   <alarmo-duration-picker
                     .hass=${this.hass}
-                    max="60"
-                    step="5"
+                            max="3600"
+                            step="60"
                     placeholder="-"
                     ?disabled=${!isDefined(this.data.delay_on)}
                     value=${this.data.delay_on}
