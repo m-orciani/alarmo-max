@@ -2050,7 +2050,7 @@ const $s=2;class Ts{constructor(e){}get _$AU(){return this._$AM._$AU}_$AT(e,a,t)
                 </alarmo-settings-row>
               `}
 
-          ${!this.data.type||[Vn.Window,Vn.Door,Vn.Motion,Vn.Environmental,Vn.Other].includes(this.data.type)?K`
+                  $(!this.data.type||this.data.trigger_unavailable||[Vn.Window,Vn.Door,Vn.Motion,Vn.Environmental,Vn.Other].includes(this.data.type)?K
                 <alarmo-settings-row .narrow=${this.narrow}>
                   <span slot="heading">
                     ${_n("panels.sensors.cards.editor.fields.delay_on.heading",this.hass.language)}
