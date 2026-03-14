@@ -50,6 +50,8 @@ ATTR_ENTITIES = "entities"
 ATTR_NEW_ENTITY_ID = "new_entity_id"
 ATTR_ENTRY_DELAY = "entry_delay"
 ATTR_DELAY_ON = "delay_on"
+ATTR_TRIGGER_UNAVAILABLE_DELAY = "trigger_unavailable_delay"
+
 
 SENSOR_STATES_OPEN = [STATE_ON, STATE_OPEN, LockState.UNLOCKED]
 SENSOR_STATES_CLOSED = [STATE_OFF, STATE_CLOSED, LockState.LOCKED]
@@ -449,17 +451,21 @@ class SensorHandler:
             self.update_ready_to_arm_status(sensor_config["area"])
             return
 
-        # Check if delay_on is configured
-        delay_on = sensor_config.get(ATTR_DELAY_ON) or 0
+        # Check if delay_on is configured (for open state triggers)
+        # or trigger_unavailable_delay (for unavailable state triggers)
+        if new_state == STATE_UNAVAILABLE:
+            delay = sensor_config.get(ATTR_TRIGGER_UNAVAILABLE_DELAY) or 0
+        else:
+            delay = sensor_config.get(ATTR_DELAY_ON) or 0
 
-        if delay_on > 0:
-            # Start delay_on timer instead of immediate trigger
-            if self._start_delay_on_timer(entity, new_state):
+        if delay > 0:
+            if self._start_delay_on_timer(entity, new_state, delay):
                 self.update_ready_to_arm_status(sensor_config["area"])
                 return
 
         # No trigger delay or timer failed to start - execute immediately
         self._execute_sensor_trigger(entity, new_state)
+
 
     def _start_entity_timer(
         self,
@@ -508,11 +514,11 @@ class SensorHandler:
         """Cancel timer(s) for automatical arming."""
         self._stop_entity_timer(self._arm_timers, entity)
 
-    def _start_delay_on_timer(self, entity: str, new_state: str):
+    def _start_delay_on_timer(self, entity: str, new_state: str, delay: int = 0):
         """Start timer for delayed sensor trigger."""
         sensor_config = self._config[entity]
-        delay = sensor_config.get(ATTR_DELAY_ON) or 0
-
+        if delay <= 0:
+            delay = sensor_config.get(ATTR_DELAY_ON) or 0
         if delay <= 0:
             return False
 

@@ -266,7 +266,11 @@
             "trigger_unavailable": {
               "heading": "Fai scattare l'allarme quando non disponibile",
               "description": "L'allarme scatterà quando lo stato del sensore diverrà 'non disponibile'."
-            }
+            },
+			"trigger_unavailable_delay": {
+			  "heading": "Ritardo per non disponibilità",
+			  "description": "Il sensore deve rimanere non disponibile per questa durata prima di far scattare l'allarme. Si azzera se torna disponibile."
+			}
           },
           "actions": {
             "toggle_advanced": "Impostazione avanzate",

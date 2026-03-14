@@ -338,8 +338,8 @@ export class SensorEditorCard extends SubscribeMixin(LitElement) {
         : ''}
 
           ${!this.data.type || this.data.trigger_unavailable ||
-		 [ESensorTypes.Window, ESensorTypes.Door, ESensorTypes.Motion, ESensorTypes.Environmental, ESensorTypes.Tamper, ESensorTypes.Other].includes(this.data.type) ? html`
-
+        [ESensorTypes.Window, ESensorTypes.Door, ESensorTypes.Motion, ESensorTypes.Environmental, ESensorTypes.Other].includes(this.data.type)
+        ? html`
                 <alarmo-settings-row .narrow=${this.narrow}>
                   <span slot="heading">
                     ${localize('panels.sensors.cards.editor.fields.delay_on.heading', this.hass.language)}
@@ -461,6 +461,20 @@ export class SensorEditorCard extends SubscribeMixin(LitElement) {
               @change=${(ev: Event) => this._SetData({ trigger_unavailable: (ev.target as HTMLInputElement).checked })}
             ></ha-switch>
           </alarmo-settings-row>
+			${this.data.trigger_unavailable ? html`
+			  <alarmo-settings-row .narrow="${this.narrow}" nested>
+				<span slot="heading">${localize('panels.sensors.cards.editor.fields.trigger_unavailable_delay.heading', this.hass.language)}</span>
+				<span slot="description">${localize('panels.sensors.cards.editor.fields.trigger_unavailable_delay.description', this.hass.language)}</span>
+				<alarmo-duration-picker
+				  .hass="${this.hass}"
+				  max="3600"
+				  step="60"
+				  placeholder="-"
+				  ?disabled="${!isDefined(this.data.trigger_unavailable_delay)}"
+				  value="${this.data.trigger_unavailable_delay}"
+				  @value-changed="${(ev: CustomEvent) => this._SetData({ trigger_unavailable_delay: ev.detail.value })}">
+				</alarmo-duration-picker>
+			  </alarmo-settings-row>` : ''}
         </alarmo-collapsible-section>
 
         <div class="card-actions">
@@ -532,7 +546,10 @@ export class SensorEditorCard extends SubscribeMixin(LitElement) {
           this.data = { ...this.data, entry_delay: val as number | null };
           break;
         case 'delay_on':
-          this.data = { ...this.data, delay_on: val as number | null };
+          this.data = { ...this.data, delay_on: val as number | null } as AlarmoSensor;
+          break;
+        case 'trigger_unavailable_delay':
+          this.data = { ...this.data, trigger_unavailable_delay: val as number | null };
           break;
       }
     }
