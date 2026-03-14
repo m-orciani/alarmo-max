@@ -145,6 +145,8 @@ export function defaultSensorConfig(stateObj: HassEntity | undefined, modeList: 
     auto_bypass: false,
     auto_bypass_modes: [],
     trigger_unavailable: false,
+    inverted: false,	
+    trigger_unavailable_delay: null,
     type: ESensorTypes.Other,
     enabled: true,
   };

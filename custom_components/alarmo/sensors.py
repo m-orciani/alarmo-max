@@ -50,6 +50,7 @@ ATTR_ENTITIES = "entities"
 ATTR_NEW_ENTITY_ID = "new_entity_id"
 ATTR_ENTRY_DELAY = "entry_delay"
 ATTR_DELAY_ON = "delay_on"
+ATTR_INVERTED = "inverted"
 ATTR_TRIGGER_UNAVAILABLE_DELAY = "trigger_unavailable_delay"
 
 
@@ -91,6 +92,8 @@ def parse_sensor_state(state):
 
 def sensor_state_allowed(state, sensor_config, alarm_state):  # noqa: PLR0911
     """Return whether the sensor state is permitted or a state change should occur."""
+    if sensor_config.get(ATTR_INVERTED) and state in (STATE_OPEN, STATE_CLOSED):
+        state = STATE_CLOSED if state == STATE_OPEN else STATE_OPEN
     if state != STATE_OPEN and (
         state != STATE_UNAVAILABLE or not sensor_config[ATTR_TRIGGER_UNAVAILABLE]
     ):

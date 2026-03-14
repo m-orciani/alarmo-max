@@ -447,7 +447,13 @@ export class SensorEditorCard extends SubscribeMixin(LitElement) {
               </alarmo-settings-row>
             `
         : ''}
-
+		  <alarmo-settings-row .narrow=${this.narrow}>
+		    <span slot="heading">${localize('panels.sensors.cards.editor.fields.inverted.heading', this.hass.language)}</span>
+		    <span slot="description">${localize('panels.sensors.cards.editor.fields.inverted.description', this.hass.language)}</span>
+		    <ha-switch ?checked=${this.data.inverted}
+		  	  @change=${(ev: Event) => this._SetData({ inverted: (ev.target as HTMLInputElement).checked })}>
+		    </ha-switch>
+		  </alarmo-settings-row>
           <alarmo-settings-row .narrow=${this.narrow}>
             <span slot="heading">
               ${localize('panels.sensors.cards.editor.fields.trigger_unavailable.heading', this.hass.language)}
@@ -541,6 +547,9 @@ export class SensorEditorCard extends SubscribeMixin(LitElement) {
           break;
         case 'trigger_unavailable':
           this.data = { ...this.data, trigger_unavailable: val == true };
+          break;
+        case 'inverted':
+          this.data = { ...this.data, inverted: val == true };
           break;
         case 'entry_delay':
           this.data = { ...this.data, entry_delay: val as number | null };

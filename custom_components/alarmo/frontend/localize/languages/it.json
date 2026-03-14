@@ -270,6 +270,10 @@
 			"trigger_unavailable_delay": {
 			  "heading": "Ritardo per non disponibilità",
 			  "description": "Il sensore deve rimanere non disponibile per questa durata prima di far scattare l'allarme. Si azzera se torna disponibile."
+			},
+			"inverted": {
+			  "heading": "Logica invertita",
+			  "description": "Il sensore innesca l'allarme quando è OFF anziché ON."
 			}
           },
           "actions": {

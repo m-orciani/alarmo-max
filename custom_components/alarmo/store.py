@@ -109,7 +109,7 @@ class SensorEntry:
     entry_delay = attr.ib(type=int, default=None)
     delay_on = attr.ib(type=int, default=None)
     trigger_unavailable_delay = attr.ib(type=int, default=None)
-
+    inverted = attr.ib(type=bool, default=False)
 
 
 @attr.s(slots=True, frozen=True)

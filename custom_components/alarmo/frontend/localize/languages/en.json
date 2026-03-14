@@ -270,6 +270,10 @@
 			"trigger_unavailable_delay": {
 			  "heading": "Unavailability delay",
 			  "description": "Sensor must remain unavailable for this duration before triggering. Resets if sensor becomes available."
+			},
+			"inverted": {
+			  "heading": "Inverted logic",
+			  "description": "Sensor triggers the alarm when OFF instead of ON."
 			}
           },
           "actions": {
