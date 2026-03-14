@@ -2034,7 +2034,8 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
                 </alarmo-settings-row>
               `}
 
-          ${!this.data.type||this.data.trigger_unavailable||[qn.Window,qn.Door,qn.Motion,qn.Environmental,qn.Other].includes(this.data.type)?F`
+          ${!this.data.type||this.data.trigger_unavailable||[qn.Window,qn.Door,qn.Motion,qn.Environmental,qn.Tamper,qn.Other].includes(this.data.type)?F`
+
                 <alarmo-settings-row .narrow=${this.narrow}>
                   <span slot="heading">
                     ${bn("panels.sensors.cards.editor.fields.delay_on.heading",this.hass.language)}
