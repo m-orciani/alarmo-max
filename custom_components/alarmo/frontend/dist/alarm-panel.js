@@ -187,7 +187,7 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
             @focusin=${this._onFocus}
             no-spinner
             .autoValidate=${!0}
-            maxlength="1"
+            maxlength="2"
             min="0"
             .max=${Math.floor(this.max/us)}
             .disabled=${this.disabled}
