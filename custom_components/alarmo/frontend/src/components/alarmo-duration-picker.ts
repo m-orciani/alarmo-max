@@ -57,7 +57,7 @@ export class AlarmoDurationPicker extends LitElement {
             @focusin=${this._onFocus}
             no-spinner
             .autoValidate=${true}
-            maxlength="1"
+            maxlength="2"
             min="0"
             .max=${Math.floor(this.max / SECONDS_PER_MINUTE)}
             .disabled=${this.disabled}
