@@ -115,7 +115,7 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
     margin-bottom: -20px;
   }
 
-  ha-textfield {
+  ha-input {
     min-width: 220px;
   }
 
@@ -178,7 +178,8 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
           </ha-checkbox>`}
         </div>
         <div class="column">
-          <ha-textfield
+          <div class="row">
+          <ha-input
             id="minutes"
             inputmode="numeric"
             .value=${this.disabled?this.placeholder:this._getMinutes()}
@@ -192,14 +193,14 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
             .max=${Math.floor(this.max/us)}
             .disabled=${this.disabled}
             .validityTransform=${this._validateMinutesInput}
-                  suffix=":"
-                  class="hasSuffix"
           >
-          </ha-textfield>
+          </ha-input>
+          <div class="time-separator">:</div>
+          </div>
           <span class="label">${bn("components.time_picker.minutes",this.hass.language)}</span>
         </div>
         <div class="column">
-          <ha-textfield
+          <ha-input
             id="seconds"
             inputmode="numeric"
             .value=${this.disabled?this.placeholder:this._getSeconds()}
@@ -214,7 +215,7 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
             .disabled=${this.disabled}
             .validityTransform=${this._validateSecondsInput}
           >
-          </ha-textfield>
+          </ha-input>
           <span class="label">${bn("components.time_picker.seconds",this.hass.language)}</span>
         </div>
         ${this.showArrows?F`
@@ -252,19 +253,34 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
     :host([required]) div.wrapper {
       margin-left: 10px;
     }
-    ha-textfield {
+    ha-checkbox {
+      margin-top: 4px;
+    }
+    ha-input {
       width: 70px;
-      height: 48px;
+      height: 56px;
+      --ha-input-padding-top: 0px;
+      --ha-input-padding-bottom: 0px;
+      --ha-input-text-align: center;
+      --wa-form-control-value-font-size: 16px;
+    }
+    ha-input::part(wa-input) {
       text-align: center;
-      --mdc-shape-small: 0;
-      --text-field-appearance: none;
-      --text-field-padding: 0 4px;
-      --text-field-suffix-padding-left: 2px;
-      --text-field-suffix-padding-right: 0;
-      --text-field-text-align: center;
-      --mdc-typography-subtitle1-font-size: 16px;
-      --mdc-text-field-outlined-idle-border-color: var(--card-background-color);
-      --mdc-text-field-outlined-hover-border-color: var(--card-background-color);
+    }
+    .time-separator {
+      background-color: var(--ha-color-form-background);
+      color: var(--ha-color-text-secondary);
+      border-bottom: 1px solid var(--ha-color-border-neutral-loud);
+      box-sizing: border-box;
+      height: 56px;
+      width: 12px;
+      margin-inline-start: calc(var(--ha-space-1) * -1);
+      margin-inline-end: calc(var(--ha-space-1) * -1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
     }
     div.column {
       display: flex;
@@ -273,7 +289,9 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
     div.column > * {
       display: flex;
     }
-    ha-icon {
+    div.row {
+      display: flex;
+      flex-direction: row;
     }
     wa-button {
       width: 30px;
@@ -365,7 +383,7 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
     :host([icons]) ha-select {
       --ha-space-10: var(--ha-space-15);
     }
-  `,i([ve()],bs.prototype,"hass",void 0),i([ve()],bs.prototype,"label",void 0),i([ve()],bs.prototype,"items",void 0),i([ve({type:String,reflect:!0})],bs.prototype,"value",void 0),i([ve({type:Boolean,reflect:!0})],bs.prototype,"disabled",void 0),i([ve()],bs.prototype,"helper",void 0),i([ve({type:Boolean})],bs.prototype,"showSearch",void 0),i([ve({type:Boolean})],bs.prototype,"clearable",void 0),i([ve({type:Boolean})],bs.prototype,"invalid",void 0),i([be("ha-textfield")],bs.prototype,"_menu",void 0),bs=i([ge("alarmo-select")],bs);let fs=class extends he{static get styles(){return c`
+  `,i([ve()],bs.prototype,"hass",void 0),i([ve()],bs.prototype,"label",void 0),i([ve()],bs.prototype,"items",void 0),i([ve({type:String,reflect:!0})],bs.prototype,"value",void 0),i([ve({type:Boolean,reflect:!0})],bs.prototype,"disabled",void 0),i([ve()],bs.prototype,"helper",void 0),i([ve({type:Boolean})],bs.prototype,"showSearch",void 0),i([ve({type:Boolean})],bs.prototype,"clearable",void 0),i([ve({type:Boolean})],bs.prototype,"invalid",void 0),i([be("ha-input")],bs.prototype,"_menu",void 0),bs=i([ge("alarmo-select")],bs);let fs=class extends he{static get styles(){return c`
       :host {
         display: block;
       }
@@ -751,11 +769,11 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
           <span slot="description">
             ${bn("panels.general.cards.mqtt.fields.state_topic.description",this.hass.language)}
           </span>
-          <ha-textfield
+          <ha-input
             label="${bn("panels.general.cards.mqtt.fields.state_topic.heading",this.hass.language)}"
             value=${this.selection.state_topic}
             @change=${e=>{this.selection=Object.assign(Object.assign({},this.selection),{state_topic:e.target.value});}}
-          ></ha-textfield>
+          ></ha-input>
         </alarmo-settings-row>
 
         <alarmo-collapsible-section
@@ -768,12 +786,12 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
                   <span slot="description">
                     ${bn("panels.general.cards.mqtt.fields.state_payload.item",this.hass.language,"{state}",Zn(e))}
                   </span>
-                  <ha-textfield
+                  <ha-input
                     label=${Zn(e)}
                     placeholder=${e}
                     value=${this.selection.state_payload[e]||""}
                     @change=${a=>{this.selection=ss(this.selection,{state_payload:{[e]:a.target.value}});}}
-                  ></ha-textfield>
+                  ></ha-input>
                 </alarmo-settings-row>
               `)}
         </alarmo-collapsible-section>
@@ -785,11 +803,11 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
           <span slot="description">
             ${bn("panels.general.cards.mqtt.fields.event_topic.description",this.hass.language)}
           </span>
-          <ha-textfield
+          <ha-input
             label="${bn("panels.general.cards.mqtt.fields.event_topic.heading",this.hass.language)}"
             value=${this.selection.event_topic}
             @change=${e=>{this.selection=Object.assign(Object.assign({},this.selection),{event_topic:e.target.value});}}
-          ></ha-textfield>
+          ></ha-input>
         </alarmo-settings-row>
 
         <alarmo-settings-row .narrow=${this.narrow}>
@@ -799,11 +817,11 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
           <span slot="description">
             ${bn("panels.general.cards.mqtt.fields.command_topic.description",this.hass.language)}
           </span>
-          <ha-textfield
+          <ha-input
             label="${bn("panels.general.cards.mqtt.fields.command_topic.heading",this.hass.language)}"
             value=${this.selection.command_topic}
             @change=${e=>{this.selection=Object.assign(Object.assign({},this.selection),{command_topic:e.target.value});}}
-          ></ha-textfield>
+          ></ha-input>
         </alarmo-settings-row>
 
         <alarmo-collapsible-section
@@ -816,12 +834,12 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
                   <span slot="description">
                     ${bn("panels.general.cards.mqtt.fields.command_payload.item",this.hass.language,"{command}",Zn(e))}
                   </span>
-                  <ha-textfield
+                  <ha-input
                     label=${Zn(e)}
                     placeholder=${e}
                     value=${this.selection.command_payload[e]||""}
                     @change=${a=>{this.selection=ss(this.selection,{command_payload:{[e]:a.target.value}});}}
-                  ></ha-textfield>
+                  ></ha-input>
                 </alarmo-settings-row>
               `)}
         </alarmo-collapsible-section>
@@ -1354,10 +1372,10 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button appearance="plain" slot="primaryAction" @click=${this.cancelClick} dialogAction="close">
-            ${this.hass.localize("ui.dialogs.generic.cancel")}
+            ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button appearance="plain" slot="secondaryAction" style="float: left" @click=${this.confirmClick} dialogAction="close">
-            ${this.hass.localize("ui.dialogs.generic.ok")}
+            ${this.hass.localize("ui.common.ok")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -1383,11 +1401,11 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
           </div>
         </ha-dialog-header>
         <div class="wrapper">
-          <ha-textfield
+          <ha-input
             label=${this.hass.localize("ui.common.name")}
             @input=${e=>this.name=e.target.value}
             value="${this.name}"
-          ></ha-textfield>
+          ></ha-input>
           ${this.area_id?F`
                 <span class="note">
                   ${bn("panels.general.dialogs.edit_area.name_warning",this.hass.language)}
@@ -1429,7 +1447,7 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
       span.note {
         color: var(--secondary-text-color);
       }
-      ha-textfield {
+      ha-input {
         display: block;
       }
       alarmo-select {
@@ -1467,11 +1485,11 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
           <div slot="title">${bn("panels.general.dialogs.edit_master.title",this.hass.language)}</div>
         </ha-dialog-header>
         <div class="wrapper">
-          <ha-textfield
+          <ha-input
             label=${this.hass.localize("ui.common.name")}
             @input=${e=>this.name=e.target.value}
             value="${this.name}"
-          ></ha-textfield>
+          ></ha-input>
           <span class="note">${bn("panels.general.dialogs.edit_area.name_warning",this.hass.language)}</span>
         </div>
         <ha-dialog-footer slot="footer">
@@ -1490,7 +1508,7 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
       span.note {
         color: var(--secondary-text-color);
       }
-      ha-textfield {
+      ha-input {
         display: block;
       }
     `;}};i([ve({attribute:!1})],Bs.prototype,"hass",void 0),i([_e()],Bs.prototype,"_params",void 0),i([ve()],Bs.prototype,"name",void 0),Bs=i([ge("edit-master-dialog")],Bs);var Vs=Object.freeze({__proto__:null,get EditMasterDialog(){return Bs;}});let qs=class extends xe(he){constructor(){super(...arguments),this.areas={},this.automations={};}hassSubscribe(){return this._fetchData(),[this.hass.connection.subscribeMessage(()=>this._fetchData(),{type:"alarmo_config_updated"})];}async _fetchData(){this.hass&&(this.config=await ke(this.hass),this.areas=await Oe(this.hass),this.automations=await Ae(this.hass),this.data=Xn(this.config,["trigger_time","disarm_after_trigger","ignore_blocking_sensors_after_trigger","mqtt","master"]));}firstUpdated(){(async()=>{await fe();})();}render(){var e,a,t,i,n,s,r,o,d;return this.hass&&this.config&&this.data?"mqtt_configuration"==this.path.subpage?F`
@@ -1641,11 +1659,11 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
             <span slot="description">
               ${bn("panels.sensors.dialogs.create_group.fields.name.description",this.hass.language)}
             </span>
-            <ha-textfield
+            <ha-input
               label=${this.hass.localize("ui.common.name")}
               @input=${e=>this.data=Object.assign(Object.assign({},this.data),{name:String(e.target.value).trim()})}
               value="${this.data.name}"
-            ></ha-textfield>
+            ></ha-input>
           </alarmo-settings-row>
 
           <alarmo-settings-row large dialog>
@@ -2287,12 +2305,12 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
             ${bn("panels.codes.cards.new_user.fields.name.description",this.hass.language)}
           </span>
 
-          <ha-textfield
+          <ha-input
             label="${bn("panels.codes.cards.new_user.fields.name.heading",this.hass.language)}"
             placeholder=""
             value=${this.data.name}
             @input=${e=>this.data=Object.assign(Object.assign({},this.data),{name:e.target.value})}
-          ></ha-textfield>
+          ></ha-input>
         </alarmo-settings-row>
 
         ${this.item?F`
@@ -2304,13 +2322,13 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
                   ${bn("panels.codes.cards.edit_user.fields.old_code.description",this.hass.language)}
                 </span>
 
-                <ha-textfield
+                <ha-input
                   label="${bn("panels.codes.cards.edit_user.fields.old_code.heading",this.hass.language)}"
                   placeholder=""
                   type="password"
                   value=${this.data.old_code||""}
                   @input=${e=>this.data=Object.assign(Object.assign({},this.data),{old_code:String(e.target.value).trim()})}
-                ></ha-textfield>
+                ></ha-input>
               </alarmo-settings-row>
             `:""}
         ${this.item&&!(null===(e=this.data.old_code)||void 0===e?void 0:e.length)?"":F`
@@ -2322,13 +2340,13 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
                   ${bn("panels.codes.cards.new_user.fields.code.description",this.hass.language)}
                 </span>
 
-                <ha-textfield
+                <ha-input
                   label="${bn("panels.codes.cards.new_user.fields.code.heading",this.hass.language)}"
                   placeholder=""
                   type="password"
                   value=${this.data.code}
                   @input=${e=>this.data=Object.assign(Object.assign({},this.data),{code:String(e.target.value).trim()})}
-                ></ha-textfield>
+                ></ha-input>
               </alarmo-settings-row>
 
               <alarmo-settings-row .narrow=${this.narrow}>
@@ -2339,13 +2357,13 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
                   ${bn("panels.codes.cards.new_user.fields.confirm_code.description",this.hass.language)}
                 </span>
 
-                <ha-textfield
+                <ha-input
                   label="${bn("panels.codes.cards.new_user.fields.confirm_code.heading",this.hass.language)}"
                   placeholder=""
                   type="password"
                   value=${this.repeatCode||""}
                   @input=${e=>this.repeatCode=String(e.target.value).trim()}
-                ></ha-textfield>
+                ></ha-input>
               </alarmo-settings-row>
             `}
 
@@ -2681,12 +2699,12 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
                           ${bn("panels.actions.cards.new_notification.fields.title.description",this.hass.language)}
                         </span>
 
-                        <ha-textfield
+                        <ha-input
                           label="${bn("panels.actions.cards.new_notification.fields.title.heading",this.hass.language)}"
                           .value=${(null===(t=this.config.actions[0].data)||void 0===t?void 0:t.title)||""}
                           @input=${this._setTitle}
                           ?invalid=${this.errors.title}
-                        ></ha-textfield>
+                        ></ha-input>
                       </alarmo-settings-row>
                     `}
                 ${this.config.actions[0].service&&"tts"==ds(this.config.actions[0].service)?F`
@@ -2847,13 +2865,13 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
               ${bn("panels.actions.cards.new_notification.fields.name.description",this.hass.language)}
             </span>
 
-            <ha-textfield
+            <ha-input
               label="${bn("panels.actions.cards.new_notification.fields.name.heading",this.hass.language)}"
               .placeholder=${this._namePlaceholder()}
               .value=${this.config.name||""}
               @input=${this._setName}
               ?invalid=${this.errors.name}
-            ></ha-textfield>
+            ></ha-input>
           </alarmo-settings-row>
 
           ${(null===(r=this.item)||void 0===r?void 0:r.automation_id)?F`
@@ -3097,13 +3115,13 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
               ${bn("panels.actions.cards.new_action.fields.name.description",this.hass.language)}
             </span>
 
-            <ha-textfield
+            <ha-input
               label="${bn("panels.actions.cards.new_action.fields.name.heading",this.hass.language)}"
               .placeholder=${this._namePlaceholder()}
               .value=${this.config.name||""}
               @input=${this._setName}
               ?invalid=${this.errors.name}
-            ></ha-textfield>
+            ></ha-input>
           </alarmo-settings-row>
 
           ${(null===(e=this.item)||void 0===e?void 0:e.automation_id)?F`
@@ -3281,7 +3299,7 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
             ${bn("title",this.hass.language)}
           </div>
           <div class="version">
-            v${"1.10.16"}
+            v${"1.10.17"}
           </div>
         </div>
 
