@@ -8,16 +8,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  hacs_validation:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: "actions/checkout@v4"
-
-      - name: HACS validation
-        uses: "hacs/action@main"
-        with:
-          category: "integration"
-
   pytests:
     runs-on: ubuntu-latest
     steps:

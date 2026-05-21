@@ -44,6 +44,7 @@ from .sensors import (
     ATTR_DELAY_ON,
     ATTR_ENTITIES,
     ATTR_GROUP_ID,
+    ATTR_INVERTED,
     ATTR_ALWAYS_ON,
     ATTR_ALLOW_OPEN,
     ATTR_AUTO_BYPASS,
@@ -56,7 +57,6 @@ from .sensors import (
     ATTR_AUTO_BYPASS_MODES,
     ATTR_TRIGGER_UNAVAILABLE,
     ATTR_TRIGGER_UNAVAILABLE_DELAY,
-    ATTR_INVERTED,
 )
 
 
@@ -239,7 +239,9 @@ class AlarmoSensorView(HomeAssistantView):
                 vol.Optional(ATTR_GROUP): vol.Any(cv.string, None),
                 vol.Optional(ATTR_ENTRY_DELAY): vol.Any(cv.positive_int, None),
                 vol.Optional(ATTR_DELAY_ON): vol.Any(cv.positive_int, None),
-                vol.Optional(ATTR_TRIGGER_UNAVAILABLE_DELAY): vol.Any(cv.positive_int, None),
+                vol.Optional(ATTR_TRIGGER_UNAVAILABLE_DELAY): vol.Any(
+                    cv.positive_int, None
+                ),
                 vol.Optional(ATTR_INVERTED): cv.boolean,
                 vol.Optional(ATTR_NEW_ENTITY_ID): cv.string,
             }
