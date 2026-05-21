@@ -2216,11 +2216,11 @@ var e=function(a,t){return e=Object.setPrototypeOf||{__proto__:[]}instanceof Arr
           ${bn("panels.sensors.cards.sensors.table.no_items",this.hass.language)}
         </alarmo-table>
       </ha-card>
-    `:F``;}tableColumns(){const e=(...e)=>e.map(e=>e.replace(".","_")).join("_");return{icon:{width:"40px",renderer:a=>{const t=this.hass.states[a.entity_id],i=Object.keys(qn).find(e=>qn[e]==a.type),n=t?"on"===t.state?Rn[i]:In[i]:"M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z";return a.area==tr?F`
+    `:F``;}tableColumns(){const e=(...e)=>e.map(e=>e.replace(".","_")).join("_");return{icon:{width:"40px",renderer:a=>{const t=this.hass.states[a.entity_id],i=Object.keys(qn).find(e=>qn[e]==a.type),n=a.inverted?["off","closed"]:["on","open"],s=t?n.includes(t.state)?Rn[i]:In[i]:"M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z";return a.area==tr?F`
               <ha-icon icon="mdi:alert" style="color: var(--error-color)" id="${e(a.entity_id,"icon")}"></ha-icon>
               <ha-tooltip for="${e(a.entity_id,"icon")}">${bn("panels.sensors.cards.sensors.table.no_area_warning",this.hass.language)}</ha-tooltip>
             `:F`
-              <ha-svg-icon .path=${n} class="${a.enabled?"":"disabled"}" id="${e(a.entity_id,"icon")}"></ha-svg-icon>
+              <ha-svg-icon .path=${s} class="${a.enabled?"":"disabled"}" id="${e(a.entity_id,"icon")}"></ha-svg-icon>
               <ha-tooltip for="${e(a.entity_id,"icon")}">${t?bn(`panels.sensors.cards.editor.fields.device_type.choose.${a.type}.name`,this.hass.language):this.hass.localize("state_badge.default.entity_not_found")}</ha-tooltip>
             `;}},name:{title:this.hass.localize("ui.components.entity.entity-picker.entity"),width:"60%",grow:!0,text:!0,renderer:a=>F`
           <span class="${a.enabled?"":"disabled"}" id="${e(a.entity_id,"name")}">

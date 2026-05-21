@@ -98,7 +98,8 @@ export class SensorsOverviewCard extends SubscribeMixin(LitElement) {
         renderer: (data: AlarmoSensor) => {
           const stateObj = this.hass.states[data.entity_id];
           const type = Object.keys(ESensorTypes).find(e => ESensorTypes[e] == data.type) as ESensorTypes;
-          const icon = stateObj ? stateObj.state === "on" ? ESensorIconsActive[type] : ESensorIcons[type] : mdiHelpCircleOutline;
+          const alarmStates = data.inverted ? ["off", "closed"] : ["on", "open"];
+          const icon = stateObj ? (alarmStates.includes(stateObj.state) ? ESensorIconsActive[type] : ESensorIcons[type]) : mdiHelpCircleOutline;
           return data.area == noArea
             ? html`
               <ha-icon icon="mdi:alert" style="color: var(--error-color)" id="${formatId(data.entity_id, 'icon')}"></ha-icon>

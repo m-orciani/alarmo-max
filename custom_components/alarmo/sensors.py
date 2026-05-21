@@ -402,8 +402,10 @@ class SensorHandler:
             new_state,
         )
 
-        # Cancel any pending delay_on timer when sensor turns off
-        if new_state == STATE_CLOSED and entity in self._delay_on_timers:
+        # Cancel delay_on timer when sensor returns to logical safe (closed) state.
+        # For inverted sensors the safe physical state is OPEN, not CLOSED.
+        safe_state = STATE_OPEN if sensor_config.get(ATTR_INVERTED) else STATE_CLOSED
+        if new_state == safe_state and entity in self._delay_on_timers:
             self._stop_entity_timer(self._delay_on_timers, entity)
 
         if (
@@ -454,6 +456,12 @@ class SensorHandler:
             self.update_ready_to_arm_status(sensor_config["area"])
             return
 
+        # For inverted sensors pass the logical trigger state (always OPEN) so that
+        # open_sensors shows the correct state for display and dashboard colours.
+        trigger_state = new_state
+        if sensor_config.get(ATTR_INVERTED) and new_state in (STATE_OPEN, STATE_CLOSED):
+            trigger_state = STATE_OPEN
+
         # Check if delay_on is configured (for open state triggers)
         # or trigger_unavailable_delay (for unavailable state triggers)
         if new_state == STATE_UNAVAILABLE:
@@ -462,12 +470,12 @@ class SensorHandler:
             delay = sensor_config.get(ATTR_DELAY_ON) or 0
 
         if delay > 0:
-            if self._start_delay_on_timer(entity, new_state, delay):
+            if self._start_delay_on_timer(entity, trigger_state, delay):
                 self.update_ready_to_arm_status(sensor_config["area"])
                 return
 
         # No trigger delay or timer failed to start - execute immediately
-        self._execute_sensor_trigger(entity, new_state)
+        self._execute_sensor_trigger(entity, trigger_state)
 
 
     def _start_entity_timer(
@@ -530,7 +538,16 @@ class SensorHandler:
             # Re-check if sensor is still in violation state
             current_state = self.hass.states.get(entity)
             current_sensor_state = parse_sensor_state(current_state)
-            if current_sensor_state != STATE_OPEN and not (
+            # Apply inversion to get the logical state for the violation check
+            logical_state = current_sensor_state
+            if sensor_config.get(ATTR_INVERTED) and current_sensor_state in (
+                STATE_OPEN,
+                STATE_CLOSED,
+            ):
+                logical_state = (
+                    STATE_CLOSED if current_sensor_state == STATE_OPEN else STATE_OPEN
+                )
+            if logical_state != STATE_OPEN and not (
                 current_sensor_state == STATE_UNAVAILABLE
                 and sensor_config[ATTR_TRIGGER_UNAVAILABLE]
             ):
