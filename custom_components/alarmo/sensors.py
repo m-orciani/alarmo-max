@@ -76,6 +76,13 @@ SENSOR_TYPES = [
 _LOGGER = logging.getLogger(__name__)
 
 
+def _apply_inversion(state: str, sensor_config: dict) -> str:
+    """Flip OPEN↔CLOSED for inverted sensors; leave all other states unchanged."""
+    if sensor_config.get(ATTR_INVERTED) and state in (STATE_OPEN, STATE_CLOSED):
+        return STATE_CLOSED if state == STATE_OPEN else STATE_OPEN
+    return state
+
+
 def parse_sensor_state(state):
     """Parse the state of a sensor into open/closed/unavailable/unknown."""
     if not state or not state.state:
@@ -92,8 +99,7 @@ def parse_sensor_state(state):
 
 def sensor_state_allowed(state, sensor_config, alarm_state):  # noqa: PLR0911
     """Return whether the sensor state is permitted or a state change should occur."""
-    if sensor_config.get(ATTR_INVERTED) and state in (STATE_OPEN, STATE_CLOSED):
-        state = STATE_CLOSED if state == STATE_OPEN else STATE_OPEN
+    state = _apply_inversion(state, sensor_config)
     if state != STATE_OPEN and (
         state != STATE_UNAVAILABLE or not sensor_config[ATTR_TRIGGER_UNAVAILABLE]
     ):
@@ -337,16 +343,7 @@ class SensorHandler:
                     # sensor is permitted to be open during/after arming
                     continue
                 else:
-                    # Store logical state so the card shows the correct colour.
-                    # Inverted sensors in alarm condition have physical CLOSED
-                    # but logical OPEN state.
-                    logical_state = sensor_state
-                    if sensor_config.get(ATTR_INVERTED) and sensor_state in (
-                        STATE_OPEN,
-                        STATE_CLOSED,
-                    ):
-                        logical_state = STATE_OPEN
-                    open_sensors[entity] = logical_state
+                    open_sensors[entity] = _apply_inversion(sensor_state, sensor_config)
 
         return (open_sensors, bypassed_sensors)
 
@@ -411,9 +408,8 @@ class SensorHandler:
             new_state,
         )
 
-        # Cancel delay_on timer when sensor returns to logical safe (closed) state.
-        # For inverted sensors the safe physical state is OPEN, not CLOSED.
-        safe_state = STATE_OPEN if sensor_config.get(ATTR_INVERTED) else STATE_CLOSED
+        # Cancel delay_on timer when sensor returns to the logical safe state.
+        safe_state = _apply_inversion(STATE_CLOSED, sensor_config)
         if new_state == safe_state and entity in self._delay_on_timers:
             self._stop_entity_timer(self._delay_on_timers, entity)
 
@@ -465,11 +461,7 @@ class SensorHandler:
             self.update_ready_to_arm_status(sensor_config["area"])
             return
 
-        # For inverted sensors pass the logical trigger state (always OPEN) so that
-        # open_sensors shows the correct state for display and dashboard colours.
-        trigger_state = new_state
-        if sensor_config.get(ATTR_INVERTED) and new_state in (STATE_OPEN, STATE_CLOSED):
-            trigger_state = STATE_OPEN
+        trigger_state = _apply_inversion(new_state, sensor_config)
 
         # Check if delay_on is configured (for open state triggers)
         # or trigger_unavailable_delay (for unavailable state triggers)
@@ -547,15 +539,7 @@ class SensorHandler:
             # Re-check if sensor is still in violation state
             current_state = self.hass.states.get(entity)
             current_sensor_state = parse_sensor_state(current_state)
-            # Apply inversion to get the logical state for the violation check
-            logical_state = current_sensor_state
-            if sensor_config.get(ATTR_INVERTED) and current_sensor_state in (
-                STATE_OPEN,
-                STATE_CLOSED,
-            ):
-                logical_state = (
-                    STATE_CLOSED if current_sensor_state == STATE_OPEN else STATE_OPEN
-                )
+            logical_state = _apply_inversion(current_sensor_state, sensor_config)
             if logical_state != STATE_OPEN and not (
                 current_sensor_state == STATE_UNAVAILABLE
                 and sensor_config[ATTR_TRIGGER_UNAVAILABLE]
