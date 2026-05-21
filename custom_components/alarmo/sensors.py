@@ -337,7 +337,16 @@ class SensorHandler:
                     # sensor is permitted to be open during/after arming
                     continue
                 else:
-                    open_sensors[entity] = sensor_state
+                    # Store logical state so the card shows the correct colour.
+                    # Inverted sensors in alarm condition have physical CLOSED
+                    # but logical OPEN state.
+                    logical_state = sensor_state
+                    if sensor_config.get(ATTR_INVERTED) and sensor_state in (
+                        STATE_OPEN,
+                        STATE_CLOSED,
+                    ):
+                        logical_state = STATE_OPEN
+                    open_sensors[entity] = logical_state
 
         return (open_sensors, bypassed_sensors)
 
