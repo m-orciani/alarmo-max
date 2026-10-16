@@ -141,7 +141,11 @@ class SensorHandler:
 
     def __init__(self, hass: HomeAssistant):
         """Initialize the sensor handler."""
-        self._config = None
+        # The sensor config is only loaded once HA has finished starting (see
+        # _setup_sensor_listeners below). Until then this must be an empty dict
+        # rather than None: restoring a persisted alarm state can call into
+        # active_sensors_for_alarm_state() before that point.
+        self._config = {}
         self.hass = hass
         self._state_listener = None
         self._subscriptions = []
@@ -155,9 +159,10 @@ class SensorHandler:
         @callback
         def async_update_sensor_config():
             """Sensor config updated, reload the configuration."""
-            self._config = self.hass.data[const.DOMAIN][
-                "coordinator"
-            ].store.async_get_sensors()
+            self._config = (
+                self.hass.data[const.DOMAIN]["coordinator"].store.async_get_sensors()
+                or {}
+            )
             self._groups = self.hass.data[const.DOMAIN][
                 "coordinator"
             ].store.async_get_sensor_groups()
@@ -388,15 +393,30 @@ class SensorHandler:
         new_state = parse_sensor_state(event.data["new_state"])
         sensor_config = self._config[entity]
         if old_state == STATE_UNKNOWN:
-            # sensor is unknown at startup,
-            #   state which comes after is considered as initial state
-            _LOGGER.debug(
-                "Initial state for %s is %s",
-                entity,
-                new_state,
-            )
-            self.update_ready_to_arm_status(sensor_config["area"])
-            return
+            # judge the violation on the logical state (inverted sensors)
+            logical_state = _apply_inversion(new_state, sensor_config)
+            if logical_state not in (STATE_OPEN, STATE_UNAVAILABLE) or (
+                sensor_config[ATTR_ALLOW_OPEN] and logical_state == STATE_OPEN
+            ):
+                # transition to a safe state, or to open while the sensor is
+                #   allowed to be open — treat as initial state
+                _LOGGER.debug(
+                    "Initial state for %s is %s",
+                    entity,
+                    new_state,
+                )
+                self.update_ready_to_arm_status(sensor_config["area"])
+                return
+            else:
+                # transition to a violation state — do not treat as initial,
+                #   proceed through normal trigger evaluation
+                _LOGGER.debug(
+                    "Sensor %s recovered from unknown to %s while alarm is %s, "
+                    "evaluating as live state change",
+                    entity,
+                    new_state,
+                    self.hass.data[const.DOMAIN]["areas"][sensor_config["area"]].state,
+                )
         if old_state == new_state:
             # not a state change - ignore
             return
@@ -477,7 +497,6 @@ class SensorHandler:
 
         # No trigger delay or timer failed to start - execute immediately
         self._execute_sensor_trigger(entity, trigger_state)
-
 
     def _start_entity_timer(
         self,
@@ -759,6 +778,16 @@ class SensorHandler:
                 # Skip unknown sensors - they'll be handled when they become known
                 continue
 
+            if (
+                sensor_config[ATTR_ALLOW_OPEN]
+                and _apply_inversion(sensor_state, sensor_config) == STATE_OPEN
+            ):
+                _LOGGER.debug(
+                    "Sensor %s is open with allow_open, skipping startup eval",
+                    entity_id,
+                )
+                continue
+
             # Check if sensor state is allowed in current alarm state
             res = sensor_state_allowed(sensor_state, sensor_config, alarm_entity.state)
 
@@ -775,9 +804,12 @@ class SensorHandler:
 
                 # Create a synthetic event that mimics
                 #   a state change from closed to current state
-                # We use STATE_CLOSED as old state
-                #   (not STATE_UNKNOWN which would trigger early return)
-                old_state = SimpleNamespace(state=STATE_CLOSED)
+                # We use the logical safe state as old state (STATE_CLOSED, or
+                #   STATE_OPEN for inverted sensors), not STATE_UNKNOWN
+                #   which would trigger early return
+                old_state = SimpleNamespace(
+                    state=_apply_inversion(STATE_CLOSED, sensor_config)
+                )
 
                 # Create event with the structure expected by async_sensor_state_changed
                 event = SimpleNamespace(
